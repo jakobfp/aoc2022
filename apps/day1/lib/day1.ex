@@ -6,7 +6,7 @@ defmodule Day1 do
     {:ok, data} = File.read(data_file)
     String.split(data, "\n\n")
     |> Enum.map(&(String.split(&1, "\n")))
-    |> Enum.map(&count/1)
+    |> Enum.map(&cal_sum/1)
     |> Enum.with_index()
     |> Enum.reduce({0,0}, &(cal_max(&1, &2)))
   end
@@ -19,15 +19,15 @@ defmodule Day1 do
     curr
   end
 
-  defp count([]) do
+  defp cal_sum([]) do
     0
   end
 
-  defp count(["" | tail]) do
-    0 + count(tail)
+  defp cal_sum(["" | tail]) do
+    0 + cal_sum(tail)
   end
 
-  defp count([head | tail]) do
-    String.to_integer(head) + count(tail)
+  defp cal_sum([head | tail]) do
+    String.to_integer(head) + cal_sum(tail)
   end
 end
