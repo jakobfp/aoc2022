@@ -1,4 +1,5 @@
 # Aoc2022
 
-**TODO: Add description**
+Advent of Code 2022 (https://adventofcode.com/)
 
+Done with elixir.
