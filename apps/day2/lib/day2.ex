@@ -3,11 +3,11 @@ defmodule Day2 do
   Documentation for `Day2`.
   """
 
-  def run(data_file) do
+  def run(data_file, part) do
     {:ok, data} = File.read(data_file)
     String.trim(data)
     |> String.split("\n")
-    |> Enum.map(&parse_round/1)
+    |> Enum.map(&parse_round(&1, part))
     |> Enum.map(&calc_point/1)
     |> calc_sum()
   end
@@ -21,33 +21,45 @@ defmodule Day2 do
   end
 
   defp points(:win) do 6 end
-  defp points(:tie) do 3 end
+  defp points(:draw) do 3 end
   defp points(:loose) do 0 end
+  defp points(:rock) do 1 end
+  defp points(:paper) do 2 end
+  defp points(:scissors) do 3 end
 
-  defp weapon(:rock) do 1 end
-  defp weapon(:paper) do 2 end
-  defp weapon(:scissors) do 3 end
+  defp calc_point(%{op: :rock, me: :draw}) do points(:draw) + points(:rock) end
+  defp calc_point(%{op: :paper, me: :draw}) do points(:draw) + points(:paper) end
+  defp calc_point(%{op: :scissors, me: :draw}) do points(:draw) + points(:scissors) end
+  defp calc_point(%{op: :rock, me: :loose}) do points(:loose) + points(:scissors) end
+  defp calc_point(%{op: :paper, me: :loose}) do points(:loose) + points(:rock) end
+  defp calc_point(%{op: :scissors, me: :loose}) do points(:loose) + points(:paper) end
+  defp calc_point(%{op: :rock, me: :win}) do points(:win) + points(:paper) end
+  defp calc_point(%{op: :paper, me: :win}) do points(:win) + points(:scissors) end
+  defp calc_point(%{op: :scissors, me: :win}) do points(:win) + points(:rock) end
 
-  defp calc_point(%{op: :rock, me: :rock}) do points(:tie) + weapon(:rock) end
-  defp calc_point(%{op: :paper, me: :rock}) do points(:loose) + weapon(:rock) end
-  defp calc_point(%{op: :scissors, me: :rock}) do points(:win) + weapon(:rock) end
-  defp calc_point(%{op: :rock, me: :paper}) do points(:win) + weapon(:paper) end
-  defp calc_point(%{op: :paper, me: :paper}) do points(:tie) + weapon(:paper) end
-  defp calc_point(%{op: :scissors, me: :paper}) do points(:loose) + weapon(:paper) end
-  defp calc_point(%{op: :rock, me: :scissors}) do points(:loose) + weapon(:scissors) end
-  defp calc_point(%{op: :paper, me: :scissors}) do points(:win) + weapon(:scissors) end
-  defp calc_point(%{op: :scissors, me: :scissors}) do points(:tie) + weapon(:scissors) end
+  defp calc_point(%{op: :rock, me: :rock}) do points(:draw) + points(:rock) end
+  defp calc_point(%{op: :paper, me: :rock}) do points(:loose) + points(:rock) end
+  defp calc_point(%{op: :scissors, me: :rock}) do points(:win) + points(:rock) end
+  defp calc_point(%{op: :rock, me: :paper}) do points(:win) + points(:paper) end
+  defp calc_point(%{op: :paper, me: :paper}) do points(:draw) + points(:paper) end
+  defp calc_point(%{op: :scissors, me: :paper}) do points(:loose) + points(:paper) end
+  defp calc_point(%{op: :rock, me: :scissors}) do points(:loose) + points(:scissors) end
+  defp calc_point(%{op: :paper, me: :scissors}) do points(:win) + points(:scissors) end
+  defp calc_point(%{op: :scissors, me: :scissors}) do points(:draw) + points(:scissors) end
 
-  defp parse_round(round) do
+  defp parse_round(round, part) do
     [op, me] = String.split(round, " ")
-    %{op: parse_op(op), me: parse_me(me)}
+    %{op: parse_op(op), me: parse_me(me, part)}
   end
 
   defp parse_op("A") do :rock end
   defp parse_op("B") do :paper end
   defp parse_op("C") do :scissors end
-  defp parse_me("X") do :rock end
-  defp parse_me("Y") do :paper end
-  defp parse_me("Z") do :scissors end
+  defp parse_me("X", :part1) do :rock end
+  defp parse_me("Y", :part1) do :paper end
+  defp parse_me("Z", :part1) do :scissors end
+  defp parse_me("X", :part2) do :loose end
+  defp parse_me("Y", :part2) do :draw end
+  defp parse_me("Z", :part2) do :win end
 
 end
