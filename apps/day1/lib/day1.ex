@@ -4,19 +4,28 @@ defmodule Day1 do
   """
   def run(data_file) do
     {:ok, data} = File.read(data_file)
-    String.split(data, "\n\n")
+    elfs_sorted = String.split(data, "\n\n")
     |> Enum.map(&(String.split(&1, "\n")))
     |> Enum.map(&cal_sum/1)
     |> Enum.with_index()
-    |> Enum.reduce({0,0}, &(cal_max(&1, &2)))
+    |> Enum.sort(&(sort_by_cal/2))
+
+    {most_cals, elf_idx} = Enum.at(elfs_sorted, 0)
+
+    {sum_three_most_cals, _three_elves} = Enum.take(elfs_sorted, 3)
+    |> Enum.reduce({0, []}, &cals_of_elves/2)
+
+    IO.puts("Elf #{elf_idx} carries the most calories: #{most_cals}")
+    IO.puts("The three top elves carry #{sum_three_most_cals} calories in total")
+
   end
 
-  defp cal_max(el = {val, _}, {m, _}) when val > m do
-    el
+  defp cals_of_elves({cal, elf}, {cals_sum, elves}) do
+    {cal + cals_sum, [elf | elves]}
   end
 
-  defp cal_max({val, _}, curr = {m, _}) when val <= m do
-    curr
+  defp sort_by_cal({cal1, _}, {cal2, _}) do
+    cal1 >= cal2
   end
 
   defp cal_sum([]) do
