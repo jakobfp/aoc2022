@@ -2,4 +2,4 @@
 
 Advent of Code 2022 (https://adventofcode.com/)
 
-Done with elixir.
+Done with elixir for learning purposes.
