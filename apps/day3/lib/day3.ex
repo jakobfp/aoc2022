@@ -3,7 +3,22 @@ defmodule Day3 do
   Documentation for `Day3`.
   """
 
-  def run(data_file) do
+  def run(data_file, :part2) do
+    {:ok, data} = File.read(data_file)
+    String.trim(data)
+    |> String.split("\n")
+    |> Enum.map(&item_set/1)
+    |> Enum.chunk_every(3)
+    |> Enum.map(fn [items1, items2, items3] ->
+      MapSet.intersection(items1, items2)
+      |> MapSet.intersection(items3)
+      |> MapSet.to_list()
+    end)
+    |> List.flatten()
+    |> Enum.reduce({0, []}, &sum_prio/2)
+  end
+
+  def run(data_file, :part1) do
     {:ok, data} = File.read(data_file)
     String.trim(data)
     |> String.split("\n")
