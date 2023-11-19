@@ -3,7 +3,22 @@ defmodule Day5 do
   Documentation for `Day5`.
   """
 
-  def run(data_file, :part1) do
+  def run(data_file, part) do
+    {:ok, {procedure, stack_pids}} = parse(data_file)
+
+    procedure
+    |> String.split("\n")
+    |> Enum.each(&procedure_step(&1, stack_pids, part))
+
+    stack_pids
+    |> Enum.map(fn {_k, pid} ->
+      pid
+      |> :sys.get_state()
+      |> List.last()
+    end)
+  end
+
+  defp parse(data_file) do
     {:ok, data} = File.read(data_file)
     {stacks, procedure} =
       data
@@ -21,25 +36,23 @@ defmodule Day5 do
       end)
       |> Enum.into(%{})
 
-    procedure
-    |> String.split("\n")
-    |> Enum.each(&do_procedure(&1, stack_pids))
-
-    stack_pids
-    |> Enum.map(fn {_k, pid} ->
-      pid
-      |> :sys.get_state()
-      |> List.last()
-    end)
+    {:ok, {procedure, stack_pids}}
   end
 
-  defp do_procedure("", _), do: :ok
-  defp do_procedure(order, stack_pids) do
+  defp procedure_step("", _, _), do: :ok
+  defp procedure_step(order, stack_pids, part) do
     ["move", how_many, "from", from, "to", to] = String.split(order, " ")
     {how_many, ""} = Integer.parse(how_many)
     from = stack_pids[from]
     to = stack_pids[to]
+    move_crates(from, to, how_many, part)
+  end
+
+  defp move_crates(from, to, how_many, :part1) do
     for _x <- 1..how_many, do: GenServer.call(from, {:move, to, 1})
+  end
+  defp move_crates(from, to, how_many, :part2) do
+    GenServer.call(from, {:move, to, how_many})
   end
 
   defp parse_stack_state(stacks) do
